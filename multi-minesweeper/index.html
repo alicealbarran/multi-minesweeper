@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <h1>Multi Minesweeper</h1>
+    <button id="btnNewGame">New Game</button>
+    <button id="btnStartGame">Start Game</button>
+    <div id="divGameBoard"></div>
+
+
+    <script>
+        let clientId = null;
+        let gameId = null;
+
+        let ws = new WebSocket("ws://localhost:8118")
+        const btnNewGame = document.getElementById("btnNewGame");
+        const btnStartGame = document.getElementById("btnStartGame");
+        const divGameBoard = document.getElementById("divGameBoard");
+        const testText = document.getElementById("testText");
+
+
+        btnNewGame.addEventListener("click", e => {
+            if (true) {
+                const payLoad = {
+                    "method": "newGame",
+                    "clientID": clientId
+                }
+                ws.send(JSON.stringify(payLoad));
+            }
+
+        })
+
+        btnStartGame.addEventListener("click", e => {
+
+        })
+
+        ws.onmessage = function (message) {
+            const messageContents = JSON.parse(message.data);
+
+            if (messageContents.method === "connect") {
+                clientId = messageContents.clientId;
+                console.log("client id obtained - "+clientId);
+
+            }
+        }
+
+    </script>
+</body>
+</html>

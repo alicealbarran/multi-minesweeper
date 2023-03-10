@@ -1,0 +1,12 @@
+{
+  "name": "multi-minesweeper",
+  "version": "0.0.0",
+  "description": "multi-minesweeper",
+  "main": "server.js",
+  "author": {
+    "name": ""
+  },
+  "dependencies": {
+    "websocket": "^1.0.34"
+  }
+}
