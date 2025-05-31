@@ -10,6 +10,11 @@
     <button id="btnNewGame">New Game</button>
     <button id="btnStartGame">Start Game</button>
     <div id="divGameBoard"></div>
+    <div id="gamesListWrapper">
+        <ul id="gamesList">
+
+        </ul>
+    </div>
 
 
     <script>
@@ -21,9 +26,11 @@
         const btnStartGame = document.getElementById("btnStartGame");
         const divGameBoard = document.getElementById("divGameBoard");
         const testText = document.getElementById("testText");
+        var gameList = document.getElementById("gamesList");
 
 
         btnNewGame.addEventListener("click", e => {
+
             if (true) {
                 const payLoad = {
                     "method": "newGame",
@@ -43,9 +50,21 @@
 
             if (messageContents.method === "connect") {
                 clientId = messageContents.clientId;
-                console.log("client id obtained - "+clientId);
+                console.log("client id obtained - " + clientId);
 
             }
+            if (messageContents.method === "newGameResponse") {
+                gameListLength = messageContents.gameListLength;
+                console.log("response from new game recieved, " + gameListLength+messageContents.games.gameId);
+//                buildGameList(games);
+                var entry = document.createElement('button');
+                entry.appendChild(document.createTextNode(gameListLength));
+                gameList.append(entry);
+            }
+        }
+
+        function buildGameList(games) {
+            games.forEach(gameList.append(document.createElement('button').appendChild(document.createTextNode('1'))));
         }
 
     </script>

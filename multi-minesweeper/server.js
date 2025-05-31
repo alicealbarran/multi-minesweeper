@@ -6,6 +6,7 @@ const host = 'localhost';
 const port = 8118;
 
 const clients = {};
+const gameList = [];
 
 const httpserver = http.createServer(function (request, response) {
     console.log("Recieved request");
@@ -27,9 +28,21 @@ websocket.on('request', function (request) {
     connection.on("message", function (message) {
         const messageContents = JSON.parse(message.utf8Data)
         console.log("recieved message");
+        console.log(messageContents);
 
         if (messageContents.method === "newGame") {
             console.log("recieved request to make a new game");
+            const minesweeperGame = {
+                "gameId": guid(),
+                "players": ['1']
+            };
+
+            gameList[gameList.length] = minesweeperGame;
+            connection.send(JSON.stringify({
+                "method": "newGameResponse",
+                "gameListLength": gameList.length,
+                "games": minesweeperGame
+            }))
         }
     })
 
