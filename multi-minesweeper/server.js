@@ -6,7 +6,7 @@ const host = 'localhost';
 const port = 8118;
 
 const clients = {};
-const gameList = [];
+const lobbyList = [];
 
 const httpserver = http.createServer(function (request, response) {
     console.log("Recieved request");
@@ -23,26 +23,22 @@ const websocket = new WebSocketServer({
 
 websocket.on('request', function (request) {
     const connection = request.accept(null, request.orgin);
-    connection.on("open", () => console.log("opened!"))
-    connection.on("close", () => console.log("closed!"))
+    connection.on("open", () => console.log("connection opened!"))
+    connection.on("close", () => console.log("connection closed!"))
     connection.on("message", function (message) {
         const messageContents = JSON.parse(message.utf8Data)
-        console.log("recieved message");
         console.log(messageContents);
 
         if (messageContents.method === "newGame") {
             console.log("recieved request to make a new game");
             const minesweeperGame = {
                 "gameId": guid(),
-                "players": ['1']
+                "players": []
             };
+            minesweeperGame.players.push(messageContents.playerId);
+            lobbyList.push(minesweeperGame);
 
-            gameList[gameList.length] = minesweeperGame;
-            connection.send(JSON.stringify({
-                "method": "newGameResponse",
-                "gameListLength": gameList.length,
-                "games": minesweeperGame
-            }))
+            updateLobbyList();
         }
     })
 
@@ -58,10 +54,17 @@ websocket.on('request', function (request) {
     }
 
     connection.send(JSON.stringify(payLoad));
+    updateLobbyList();
 })
 
-
-
+function updateLobbyList() {
+    Object.keys(clients).forEach(key => {
+        clients[key].connection.send(JSON.stringify({
+            "method": "updateLobbyList",
+            "lobbyList": lobbyList
+        }));
+    });
+}
 
 
 

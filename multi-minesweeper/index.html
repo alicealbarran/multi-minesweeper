@@ -9,9 +9,10 @@
     <h1>Multi Minesweeper</h1>
     <button id="btnNewGame">New Game</button>
     <button id="btnStartGame">Start Game</button>
+    <div id="divLobby"></div>
     <div id="divGameBoard"></div>
-    <div id="gamesListWrapper">
-        <ul id="gamesList">
+    <div id="lobbyListWrapper">
+        <ul id="lobbyList">
 
         </ul>
     </div>
@@ -19,16 +20,17 @@
 
     <script>
         let clientId = null;
-        let gameId = null;
+        let currentLobby = null;
 
         let ws = new WebSocket("ws://localhost:8118")
         const btnNewGame = document.getElementById("btnNewGame");
         const btnStartGame = document.getElementById("btnStartGame");
         const divGameBoard = document.getElementById("divGameBoard");
-        const testText = document.getElementById("testText");
-        var gameList = document.getElementById("gamesList");
+        const divLobby = document.getElementById("divLobby");
+        var divLobbyList = document.getElementById("lobbyList");
 
 
+        divLobby.innerHTML = currentLobby;
         btnNewGame.addEventListener("click", e => {
 
             if (true) {
@@ -38,11 +40,14 @@
                 }
                 ws.send(JSON.stringify(payLoad));
             }
-
         })
 
         btnStartGame.addEventListener("click", e => {
-
+            if (true) {
+                const payLoad = {
+                    "method": "startGame"
+                }
+            }
         })
 
         ws.onmessage = function (message) {
@@ -51,20 +56,35 @@
             if (messageContents.method === "connect") {
                 clientId = messageContents.clientId;
                 console.log("client id obtained - " + clientId);
-
             }
+
             if (messageContents.method === "newGameResponse") {
-                gameListLength = messageContents.gameListLength;
-                console.log("response from new game recieved, " + gameListLength+messageContents.games.gameId);
-//                buildGameList(games);
-                var entry = document.createElement('button');
-                entry.appendChild(document.createTextNode(gameListLength));
-                gameList.append(entry);
+                updateLobbyList(messageContents.lobbyList);
+            }
+
+            if (messageContents.method === "updateLobbyList") {
+                updateLobbyList(messageContents.lobbyList);
             }
         }
 
-        function buildGameList(games) {
-            games.forEach(gameList.append(document.createElement('button').appendChild(document.createTextNode('1'))));
+        function updateLobbyList(lobbyList) {
+            divLobbyList.innerHTML = "";
+            for (let i = 0; i < lobbyList.length; i++) {
+                var tempButton = document.createElement('button');
+                tempButton.lobbyId = lobbyList[i].gameId;
+                tempButton.innerHTML = i+1;
+                tempButton.addEventListener("click", e => {
+                    if (true) {
+                        currentLobby = lobbyList[i].gameId;
+                        updateLobby();
+                    }
+                })
+                divLobbyList.appendChild(tempButton);
+            }
+        }
+
+        function updateLobby() {
+            divLobby.innerHTML = currentLobby;
         }
 
     </script>
